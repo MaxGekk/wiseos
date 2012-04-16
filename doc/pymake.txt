@@ -1,0 +1,422 @@
+Introduction
+
+  pymake is a simple make replacement which allows the specification
+  of file dependency graphs within Python.  With it, you can perform
+  conditional complilation of source code, install software, run
+  scripts, or perform any repeatable sequence of tasks that ends up
+  creating a known set files on your filesystem.  On subsequent runs
+  of the same set of tasks, pymake performs the least amount of work
+  possible to create the same set of files, only performing the work
+  that it detects has not already been performed by earlier runs.
+
+Platforms
+
+  pymake runs under any platform on which Python supports the
+  os.system command.  This includes UNIX/Linux and Windows.  It should
+  be run via Python 2.3+. Although it might work now using Python 2.2,
+  no effort will be made in subsequent releases to maintain backward
+  compatibility with Python 2.2.
+
+Installation
+
+  Install pymake by running the accompanying "setup.py" file, ala
+  "python setup.py install".
+
+License
+
+  The license under which pymake is released is a BSD-like license called
+  the Plope license.  It can be found accompanying the distribution
+  in the LICENSE.txt file.
+
+Rationale
+
+  pymake was created to allow me to write "buildout" scripts which
+  need to perform arbitrary tasks in the service of setting up a
+  client hosting environment with software and data.  For instance, in
+  one case, it is currently used to build multiple "instances" of
+  Zope, ZEO, Apache/PHP, Squid, Python, PyXML, and MySQL on a single
+  machine, forming a software "profile" particular to that machine.
+  The same buildout files are rearranged to create different instances
+  of software on many different machines at the same site.  The same
+  software is used to perform upgrades to existing buildouts.
+
+  Why Not Make?
+
+    I had previously been using GNU Make for the same task, but my
+    clients couldn't maintain the makefiles easily after the
+    engagement ended because they were not willing to learn GNU Make's
+    automatic variables and pattern rules which I used somewhat
+    gratuitously to make my life easier.  I also realized that even I
+    could barely read the makefiles after I had been away from them
+    for some time.
+
+    Although make's fundamental behavior is very simple, it has a few
+    problems.  Because its basic feature set is so simple, and because
+    it has been proven to need to do some reasonably complex things,
+    many make versions have also accreted features over the years to
+    allow for this complexity.  Unfortunately, it was never meant to
+    be a full-blown programming language, and the additions made to
+    make syntax to support complex tasks are fairly mystifying.
+    Additionally, if advanced make features are used within a
+    Makefile, it is difficult to debug and maintain makefiles for
+    those with little "make-fu".  Even simple failing makefiles can be
+    difficult to debug.
+
+  Why Not Ant?
+
+    I a big fan of neither Java nor XML.  Ant requires I know
+    something about both.  This is dogmatic, yes.  Does that concern
+    me?  No.
+
+  Why Not SCons?
+
+    SCons is all about solving problems specific to the domain of
+    source code recompilation.  pymake is much smaller, and more
+    general.
+
+  Why Not A-A-P?
+
+    A-A-P was designed from the perspective of someone wanting to
+    develop and install a software package on many different
+    platforms.  It does this very well, but loses some generality in
+    the process.  A-A-P also uses a make-like syntax for describing
+    tasks.  Reading and writing Python is easier, and my clients can
+    maintain it after I'm gone because usually they know Python too.
+
+General Comparisons to Other Dependency Systems
+
+  pymake is, for better or worse, completely general and very simple.
+  It performs OS shell tasks and calls in to arbitrary Python as
+  necessary only as specified by the recipe-writer, rather than
+  relying on any domain-specific implicit rules.
+
+  pymake includes no built-in provisions for building C/Java/C++/etc
+  source to object code via implicit or user-defined pattern rules.
+  In fact, it knows nothing whatsoever about creating software from
+  source files into binaries.
+
+  Unlike makefiles, pymake "recipe" files have no intrinsic syntax.
+  There are no tabs-vs-spaces issues, default rules, automatic
+  variables, or any special kind of syntax at all.  In pymake, recipe
+  files are defined within Python.  If conditionals, looping,
+  environment integration, or other advanced features become necessary
+  within one of your recipes, rather than needing to spell these
+  things within a special syntax, you just use Python instead.
+
+  Unlike make, pymake does not have the capability to perform parallel
+  execution of tasks (although it will not prevent it from happening
+  when it calls into make itself).
+
+Tasks
+
+  A "task" in pymake is equivalent to a "rule" in make.  It is the
+  fundamental "unit of work" within pymake.  A task has a description,
+  a "replacement" object, a target, a working directory, a set of
+  commands, and a set of dependent tasks.  These are described here.
+
+  Description -- A task's description is a freeform bit of text
+  describing the purpose of the task.  E.g. "configure python".  Only
+  one description may be provided for a task.  A description is
+  required for every task.
+
+  Replacement object ('repl') -- A task's replacement object is a
+  dictionary-like object that will be be used to perform string
+  interpolation against the target, workdir, and commands specified
+  within the task.  E.g. repl={'tgt_dirpath':'/tmp', 'pkg_dirname:
+  'Python-2.3.3'}.  Only one replacement object may be provided for a
+  task.
+
+  Target file ('target') -- A task's target is a string-like object
+  specifying the file that will be created as a result of this task.
+  It may include Python string interpolation syntax
+  (e.g. '%(pkg_dirname)s'), which will be resolved against the
+  replacement object just before the command is performed.  A target
+  path must be specified as an absolute path; it may not be specially
+  partially relative to any particular directory.
+
+  Working directory ('workdir') -- A task's workdir specifies the
+  directory to which the OS will chdir before performing the commands
+  implied by the task.  Only one workdir may be specified.  A workdir
+  is optional, it needn't be specified in the task argument list.
+
+  Command set ('commands') -- A task's command set is a list or tuple
+  specifying the commands that do the work implied by the task, which,
+  as a general rule, should involve creating the target file.  The
+  command set is typically a sequence of strings, although in addition
+  to strings, any callable Python object may be specified as a
+  command.  The strings that make up commands are resolved against the
+  replacement dictionary for string interpolation.  If only one string
+  command is specified, it may be specified without embedding it in a
+  list or a tuple (the same does not hold true for a single callable
+  Python object used as a command, it must be embedded in a list or
+  tuple).
+
+  Dependency set ('dependencies') -- A task's dependency set is a list
+  or tuple of other Task instances upon which this task depends.  This
+  is the way a dependency graph of tasks is formed.  If only one
+  dependency is specified, it may be specified without embedding it in
+  a list or a tuple.
+
+Example
+
+  Here is an example task, defined within a "recipe" file (which is
+  just a normal Python source file)::
+
+    configure = Task(
+      'configure python',
+      repl = {"tgt_dirpath":'"tmp", "pkg_dirname":"Python-2.3.3"},
+      target = '%(tgt_dirpath)s/build/%(pkg_dirname)s/Makefile',
+      workdir = '/tmp',
+      commands = [
+      'mkdir -p build/%(pkg_dirname)s',
+      """cd build/%(pkg_dirname)s && \
+         %(tgt_dirpath)s/src/%(pkg_dirname)s/configure \
+           --prefix=%(tgt_dirpath)s/opt/%(pkg_dirname)s \
+           --with-thread """,
+      ],
+      dependencies = checkout,
+      )
+
+  The Description of a Task
+
+    The description of a task is just a string label.  It is printed
+    when pymake is run to help you track down problems and give users
+    a sense of what is happening when your recipes are run.  It is
+    required.  In the above example, the description is 'configure
+    python'.
+
+  The Replacement Object of a Task
+
+    The replacement object of a task is a dictionary or
+    dictionary-like object against which a task's target, workdir, and
+    commands are interpolated.  In the above example, our replacement
+    object is an actual dictionary containing '{"tgt_dirpath":"/tmp",
+    "pkg_dirname":"Python-2.3.3"}'.  Just before a string command is
+    run, pymake interpolates the command against the replacement
+    object.
+
+    It is common for all the tasks in a recipe to share the same
+    replacement object.
+
+  The Target of a Task
+
+    The target of a task is the file that is meant to be created by
+    the commands specified within the task.  Although the commands of
+    a task may create many files and perform otherwise arbitrary
+    actions, the target file is the file that must be created for
+    pymake itself to consider the task "complete".
+
+    The target of our example above is
+    '%(tgt_dirpath)s/build/%(pkg_dirname)s/Makefile', which when
+    interpolated against our replacement dictionary becomes
+    '/tmp/build/Python-2.3.3/Makefile'.
+
+    A target file is not considered to be specified relative to the
+    working directory: it must be an absolute path or must be
+    specified relative to the current working directory from which the
+    pymake recipe file is invoked.  However, it can contain
+    interpolation syntax that will be resolved against the replacement
+    object.
+
+    A target is optional.  If a task has no target, it will be run
+    unconditionally by pymake on each invocation of the recipe in
+    which it is contained.
+
+    If all of a task's commands are run and the target file is not
+    subsequently available on the filesystem, pymake will throw an
+    error.  If this is not desirable, this behavior can be modified by
+    a flag within pymake itself 'STRICT_TARGET_CHECKING', allowing
+    tasks to continue without satisfying their target creation
+    contracts.  This is not recommended as, IMHO, this is the default
+    behavior of GNU Make and it is a misfeature which causes
+    potentially long bug hunts.
+
+    pymake uses file timestamps to determine whether a task needs to
+    be recompleted on subsequent runs of the same recipe.  For this
+    reason, targets should always be files, not symlinks or
+    directories, because the timestamps of these objects are sometimes
+    indeterminate.  It is common to see as the last command in a task
+    a call to the UNIX command "touch" against the target file, which
+    updates the target file's timestamp to the current time.  This is
+    necessary sometimes if the task doesn't create the file itself or
+    if it creates the file by way of performing an action which copies
+    an existing file to the target file without updating its timestamp
+    For example, in the case of checking out the file from a CVS
+    repository, the CVS client causes the timestamp of the file to
+    match that of the ,v file within the CVS repository instead of
+    causing the timestamp to be that at which the file was actually
+    created on the local filesystem.  It is necessary to "touch" the
+    target file in situations like this.
+
+  The Working Directory of a Task
+
+    In the example task above, we specify a working directory
+    ('/tmp').  The working directory indicates the directory into
+    which we will tell the OS to chdir to before performing the
+    commands indicated by the task.  This is useful because it allows
+    us to specify relative paths in commands which follow.  When the
+    task is finished, the working directory is unconditionally reset
+    to the working directory that was effective before the task
+    started.  Task working directories take effect for only the
+    duration of the task.  Using a workdir is optional.  If a workdir
+    is not specified, the commands of the task will execute in the
+    context of the working directory of the shell used to invoke the
+    recipe file.
+
+  The Command Set of a Task
+
+    In the example task shown above, we've specified two
+    commands::
+
+      'mkdir -p build/%(pkg_dirname)s'
+
+      """cd build/%(pkg_dirname)s && \
+         %(tgt_dirpath)s/src/%(pkg_dirname)s/configure \
+           --prefix=%(tgt_dirpath)s/opt/%(pkg_dirname)s \
+           --with-thread """,
+
+    The first command creates a build directory (in this case,
+    relative to the workdir directory '/tmp').  The second changes the
+    working directory to the newly-created build directory and runs
+    the 'configure' script in the Python source tree with the "prefix"
+    and "with-thread" options.  Note that each commands is
+    interpolated against the replacement object provided to the task.
+    Thus, if the replacement dictionary contained
+    {'tgt_dirpath:'/tmp', 'pkg_dirname':'Python-2.3.3'}, the resulting
+    interpolated command set would be::
+
+      mkdir -p build/Python-2.3.3
+
+      cd build/Python-2.3.3 && \
+      /tmp/src/Python-2.3.3/configure \
+        --prefix=/tmp/opt/Python-2.3.3 \
+        --with-thread
+
+    Note that the commands are executed serially in the order
+    specified within the command set.  Each command specified as a
+    string is executed by Python's 'os.system'.  If any command fails,
+    pymake will stop and raise an error.
+
+    Commands that aren't strings are assumed to be Python callables.
+    This is not evident in the above example, but you may provide as a
+    command any Python callable, such as a function, a method, or an
+    instance of a class with a __call__ method, or a builtin, or
+    whatever is necessary to get the job done.  If a command is not a
+    string, it is not executed by Python's 'os.system', instead the
+    callable is expected to do the work itself instead of delegating
+    to the OS shell, although it is free to do whatever it needs to do
+    (eg. the callable may do its own delegation to the OS shell if
+    necessary).
+
+  The Dependency Set of a Task
+
+    The dependency set of a task (specified by 'dependencies' in a
+    Task constructor) identifies other Task instances upon which this
+    task is dependent.  "Is dependent" in the previous sentence means
+    that the dependent task(s) must be completed before the task which
+    declares it as a dependency may be run.  pymake has a simple
+    algorithm for determining task and dependency "completeness"
+    specified within "Task Recompletion Algorithm" later in this
+    document.
+
+    The dependency set of the example above is '[checkout]', which
+    implies that the 'checkout' task must be completed before we can
+    run the task.  The checkout task is not shown in the example, but
+    it is presumably the task that places the source files into
+    '%(tgt_dirpath)s/src/%(pkg_dirname)s'.
+
+    A task needn't specify any dependencies.  A task may specify a
+    single dependency as a reference to a single Task instance, or it
+    may specify a sequence of references to Task instances by
+    embedding them in a list.
+
+Recipes
+
+  A recipe is a collection of tasks with dependency relationships,
+  typically organized into a single Python source code file.  It
+  typically has some boilerplate code at its top for initialization
+  and at its end to handle being invoked directly from the command
+  line.
+
+  pymake defines a helper class known as ReplacementHelper which
+  provides a mechanism to allow people to update a "default"
+  replacement dictionary with values extracted from command-line
+  options.  This is typically used within a pymake recipe to provide a
+  level of generality to the recipe.
+
+  pymake also defines a helper class known as InFileWriter, an
+  instance of which can be used as a command which reads text from an
+  "infile", does textual substitution on the file based on the
+  replacement dictionary, writes the file out to the "outfile", and
+  sets UNIX mode bits on the resulting outfile.
+
+  An example pymake recipe is provided with the pymake distribution as
+  'example_recipe.py', which downloads, build, and installs a Python
+  interpreter from source.
+
+Task Recompletion Algorithm
+
+  A task is considered to be complete if all of the following
+  statements can be made about it:
+
+   - it specifies a target file in the task definition
+
+   - its target file exists
+
+   - its target file has a later timestamp than do all of its
+     dependencies' target files.
+
+   - its target file has a later timestamp than does the recipe file
+     (the actual Python source module/script) in which the task is
+     instantiated.
+
+  If a task does not meet these completion requirements at any given
+  time, on a subsequent run of the recipe file in which it defined (or
+  from a recipe file in which it is imported and used), its commands,
+  *and all the commands of the tasks which are dependent upon it* will
+  be rerun in dependency order.
+
+  Tasks should be written with the expectation that they will be run
+  more than once.  For instance, if you create a symlink a directory
+  within a command, the command should first check if a symlink
+  already exists at that location, or you'll quite possibly end up
+  symlinking the directory inside the existing symlinked directory on
+  subsequent runs.
+
+  For some applications, you may want to turn off recipe file
+  timestamp checking (particularly when doing heavy development of
+  recipe files which perform tasks that take a long time).  To do so,
+  edit pymake.py and change the MAKEFILE_TIMESTAMP_CHECKING constant
+  to False or 0.  Alternately, break up your tasks across multiple
+  files and import them in to each other as dependencies as necesary.
+
+Recipe Example
+
+  To see a working example of a runnable recipe file, see the
+  'example_recipe.py' file that accompanies this distribution.  It
+  contains a set of tasks that compile and install a Python
+  interpreter from source code (this will only work on UNIX, sorry)
+  into a structured directory tree.  It requires 'wget' be installed
+  on the system in order to download the Python source tarball.  After
+  installing pymake using setup.py you may invoke it from the command
+  line like so::
+
+    python example_recipe.py
+
+  It will place files into your /tmp/pymake_example directory.  Once
+  it is run once, subsequent runs of the recipe should essentially be
+  a "no-op".  Delete various target files within the resulting
+  directory tree, and update the example_recipe.py file's timestamp,
+  then rerun the example recipe to see its effect on what happens
+  during pymake invocation.
+
+  Due to the use of ReplacementHelper in the recipe file, you may also
+  run the example recipe from the command line overriding different
+  replacement values, e.g.:
+
+    python example_recipe.py tgt_dirpath=/tmp/another
+
+  To delete the files created by a default invocation of the example
+  recipe, reinvoke the recipe file with the "clean" directive::
+
+    python example_recipe.py clean

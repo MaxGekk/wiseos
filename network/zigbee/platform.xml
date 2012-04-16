@@ -1,0 +1,9 @@
+<platforms>
+    <target name="msp430" >
+        <host name="linux">
+            <cc>msp430-gcc</cc>
+            <cflags>-Os -mmcu=msp430x1611 -mdisable-hwmul -nostdinc -nostdlib -fexpensive-optimizations -frename-registers -frerun-loop-opt -fstrength-reduce -pipe</cflags>
+        </host>
+    </target>
+</platforms>
+

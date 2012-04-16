@@ -1,0 +1,54 @@
+# -*- ruby -*-
+require 'rake/clean'
+require 'rake/loaders/makefile'
+
+DEFAULT_ZTARGET = 'msp'
+
+platform_msp = {
+    'CC'     =>'msp430-gcc', 
+    'CFLAGS' =>' -Os -mmcu=msp430x1611 -mdisable-hwmul -nostdinc -nostdlib -fexpensive-optimizations -frename-registers -frerun-loop-opt -fstrength-reduce -pipe'
+    }
+
+platform_pc = {
+    'CC'     => 'gcc',
+    'CFLAGS' => ' -nostdlib -fexpensive-optimizations -frename-registers -frerun-loop-opt -fstrength-reduce -pipe'
+}
+
+ZTARGET = ENV.fetch('ZTARGET',DEFAULT_ZTARGET)
+
+
+platforms = {'msp'=>platform_msp, 'pc'=>platform_pc}
+
+platform = platforms[ZTARGET]
+
+
+CC = platform['CC']
+CFLAGS = platform['CFLAGS'] + ' -DZTARGET=' + ZTARGET
+
+print "---> Building for #{ZTARGET}\n"
+
+DIR = ['./', './nwk/']
+
+INC = '-Iinclude -I../../include'
+SRC = FileList[ DIR.each{ |d| d << '*.c' } ]
+OBJ = SRC.ext('o')
+CLEAN.include(OBJ).include(".depends.mf")
+
+rule '.o' => '.c' do |t|
+    sh "#{CC} #{CFLAGS} #{INC} -c -o #{t.name} #{t.source}"
+end
+
+file ".depends.mf" => SRC do |t|
+    sh "echo > #{t.name}"
+    OBJ.each do |obj|
+        sh "#{CC} -MM -MG -MT #{obj} #{INC} #{obj[0..-2] + 'c'}  >> #{t.name}"
+
+    end
+end
+
+import ".depends.mf" 
+
+task :dep => ".depends.mf"
+task :all => OBJ
+task :default => :all
+

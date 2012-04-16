@@ -1,0 +1,155 @@
+
+./zneighbor.o: zneighbor.c ../../include/debug.h include/zneighbor.h \
+  include/ztypes.h ../../include/types.h include/zigconf.h
+./zpacket.o: zpacket.c ../../include/mem.h ../../include/types.h \
+  ../../include/debug.h include/ztypes.h include/zpacket.h \
+  include/zphy_const.h include/znet_reset.h
+./zcall.o: zcall.c ../../include/task.h ../../include/types.h \
+  ../../include/mem.h ../../include/debug.h include/zcall.h \
+  include/ztypes.h include/zigconf.h include/znet_reset.h
+./zfield.o: zfield.c ../../include/debug.h include/zfield.h \
+  include/ztypes.h ../../include/types.h
+./nwk/znet_leave_rx.o: nwk/znet_leave_rx.c ../../include/debug.h \
+  include/ztypes.h ../../include/types.h include/zcall.h \
+  include/zigconf.h include/zneighbor.h include/zpacket.h \
+  include/zphy_const.h include/zmac_rx.h include/znet_attr.h \
+  include/znet_relative.h include/znet_leave.h include/znet_field.h \
+  include/znet_const.h include/zfield.h
+./nwk/znet_sync.o: nwk/znet_sync.c include/zcall.h include/ztypes.h \
+  ../../include/types.h include/zigconf.h include/zmac_attr.h \
+  include/zmac_sync.h include/zmac_poll.h include/zneighbor.h \
+  include/znet_sync.h include/znet_relative.h
+./nwk/znet_perm_join.o: nwk/znet_perm_join.c include/zcall.h \
+  include/ztypes.h ../../include/types.h include/zigconf.h \
+  include/znet_join.h include/zmac_scan.h include/zmac_assoc.h \
+  include/zneighbor.h include/zmac_attr.h
+./nwk/znet_field.o: nwk/znet_field.c ../../include/debug.h \
+  include/ztypes.h ../../include/types.h include/znet_field.h \
+  include/znet_const.h include/zfield.h
+./nwk/znet_child.o: nwk/znet_child.c include/znet_relative.h \
+  include/zneighbor.h include/ztypes.h ../../include/types.h \
+  include/zigconf.h
+./nwk/znet_addr.o: nwk/znet_addr.c ../../include/math.h \
+  ../../include/types.h include/ztypes.h include/zneighbor.h \
+  include/zigconf.h include/zmac_attr.h include/znet_attr.h \
+  include/znet_relative.h include/znet_addr.h
+./nwk/znet_attr_0x81.o: nwk/znet_attr_0x81.c ../../include/types.h \
+  ../../include/math.h include/zmac_const.h include/ztypes.h \
+  include/znet_reset.h
+./nwk/znet_direct_join.o: nwk/znet_direct_join.c include/ztypes.h \
+  ../../include/types.h include/zigconf.h include/zcall.h \
+  include/zneighbor.h include/znet_attr.h include/zmac_attr.h \
+  include/znet_join.h include/zmac_scan.h include/zmac_assoc.h \
+  include/znet_addr.h include/znet_beacon.h include/zfield.h \
+  include/znet_relative.h
+./nwk/znet_reset.o: nwk/znet_reset.c ../../include/debug.h \
+  include/ztypes.h ../../include/types.h include/zcall.h \
+  include/zigconf.h include/zmac_reset.h include/znet_reset.h
+./nwk/znet_leave_self.o: nwk/znet_leave_self.c ../../include/debug.h \
+  include/ztypes.h ../../include/types.h include/zcall.h \
+  include/zigconf.h include/zpacket.h include/zphy_const.h \
+  include/zmac_const.h include/zmac_tx.h include/zneighbor.h \
+  include/znet_attr.h include/znet_relative.h include/znet_field.h \
+  include/znet_const.h include/zfield.h include/znet_leave.h \
+  include/zmac_rx.h
+./nwk/znet_attr_0x82.o: nwk/znet_attr_0x82.c include/ztypes.h \
+  ../../include/types.h include/znet_reset.h
+./nwk/znet_attr_0x83.o: nwk/znet_attr_0x83.c include/ztypes.h \
+  ../../include/types.h include/znet_reset.h
+./nwk/znet_parent.o: nwk/znet_parent.c include/znet_relative.h \
+  include/zneighbor.h include/ztypes.h ../../include/types.h \
+  include/zigconf.h
+./nwk/znet_attr_0x84.o: nwk/znet_attr_0x84.c include/ztypes.h \
+  ../../include/types.h include/znet_reset.h
+./nwk/znet_attr_0x85.o: nwk/znet_attr_0x85.c include/ztypes.h \
+  ../../include/types.h include/znet_reset.h
+./nwk/znet_attr_0x86.o: nwk/znet_attr_0x86.c include/ztypes.h \
+  ../../include/types.h include/znet_reset.h
+./nwk/znet_attr_0x87.o: nwk/znet_attr_0x87.c ../../include/mem.h \
+  ../../include/types.h include/zigconf.h include/ztypes.h \
+  include/zneighbor.h include/znet_reset.h
+./nwk/znet_attr_0x88.o: nwk/znet_attr_0x88.c ../../include/types.h \
+  include/znet_reset.h include/ztypes.h
+./nwk/znet_attr_0x89.o: nwk/znet_attr_0x89.c include/ztypes.h \
+  ../../include/types.h include/znet_reset.h
+./nwk/znet_attr_0x8a.o: nwk/znet_attr_0x8a.c ../../include/types.h \
+  include/znet_const.h include/znet_reset.h include/ztypes.h
+./nwk/znet_attr_0x8e.o: nwk/znet_attr_0x8e.c ../../include/types.h \
+  include/znet_reset.h include/ztypes.h
+./nwk/znet_attr_0x8f.o: nwk/znet_attr_0x8f.c ../../include/types.h \
+  include/ztypes.h include/znet_reset.h
+./nwk/znet_attr_0x90.o: nwk/znet_attr_0x90.c include/ztypes.h \
+  ../../include/types.h include/znet_reset.h
+./nwk/znet_attr_0x91.o: nwk/znet_attr_0x91.c include/ztypes.h \
+  ../../include/types.h include/znet_reset.h
+./nwk/znet_attr_0x92.o: nwk/znet_attr_0x92.c include/ztypes.h \
+  ../../include/types.h include/znet_reset.h
+./nwk/znet_attr_0x93.o: nwk/znet_attr_0x93.c include/ztypes.h \
+  ../../include/types.h include/znet_reset.h
+./nwk/znet_attr_0x94.o: nwk/znet_attr_0x94.c include/ztypes.h \
+  ../../include/types.h include/znet_reset.h
+./nwk/znet_attr_0x95.o: nwk/znet_attr_0x95.c include/ztypes.h \
+  ../../include/types.h include/znet_reset.h
+./nwk/znet_attr_0x96.o: nwk/znet_attr_0x96.c include/ztypes.h \
+  ../../include/types.h include/znet_reset.h
+./nwk/znet_attr_0x97.o: nwk/znet_attr_0x97.c include/ztypes.h \
+  ../../include/types.h include/znet_reset.h
+./nwk/znet_attr_0x98.o: nwk/znet_attr_0x98.c include/ztypes.h \
+  ../../include/types.h include/znet_const.h include/znet_reset.h
+./nwk/znet_attr_0x9a.o: nwk/znet_attr_0x9a.c include/ztypes.h \
+  ../../include/types.h include/znet_reset.h
+./nwk/znet_rx.o: nwk/znet_rx.c ../../include/debug.h include/ztypes.h \
+  ../../include/types.h include/zcall.h include/zigconf.h \
+  include/zpacket.h include/zphy_const.h include/zfield.h \
+  include/zmac_rx.h include/zmac_attr.h include/znet_attr.h \
+  include/zneighbor.h include/znet_field.h include/znet_const.h \
+  include/znet_leave.h include/znet_group.h include/znet_route.h \
+  include/znet_rx.h
+./nwk/znet_leave.o: nwk/znet_leave.c ../../include/debug.h \
+  include/zigconf.h include/zcall.h include/ztypes.h \
+  ../../include/types.h include/zpacket.h include/zphy_const.h \
+  include/zmac_tx.h include/zneighbor.h include/znet_attr.h \
+  include/znet_relative.h include/znet_field.h include/znet_const.h \
+  include/zfield.h include/znet_leave.h include/zmac_rx.h \
+  include/znet_beacon.h
+./nwk/znet_assoc_parent.o: nwk/znet_assoc_parent.c ../../include/debug.h \
+  include/zigconf.h include/zcall.h include/ztypes.h \
+  ../../include/types.h include/zneighbor.h include/zmac_attr.h \
+  include/znet_join.h include/zmac_scan.h include/zmac_assoc.h \
+  include/znet_attr.h include/znet_addr.h include/znet_beacon.h \
+  include/zfield.h include/znet_relative.h
+./nwk/znet_group.o: nwk/znet_group.c ../../include/debug.h \
+  include/zigconf.h include/znet_group.h include/ztypes.h \
+  ../../include/types.h include/znet_reset.h
+./nwk/znet_assoc_child.o: nwk/znet_assoc_child.c ../../include/debug.h \
+  include/ztypes.h ../../include/types.h include/zigconf.h \
+  include/zcall.h include/zneighbor.h include/znet_join.h \
+  include/zmac_scan.h include/zmac_assoc.h include/znet_attr.h
+./nwk/znet_formation.o: nwk/znet_formation.c ../../include/math.h \
+  ../../include/types.h include/ztypes.h include/zcall.h \
+  include/zigconf.h include/zneighbor.h include/zmac_const.h \
+  include/zmac_attr.h include/zmac_beacon.h include/zmac_scan.h \
+  include/zmac_start.h include/znet_attr.h include/znet_beacon.h \
+  include/zfield.h include/znet_formation.h
+./nwk/znet_bnotify.o: nwk/znet_bnotify.c include/ztypes.h \
+  ../../include/types.h include/zcall.h include/zigconf.h \
+  include/zneighbor.h include/zmac_bnotify.h include/zpacket.h \
+  include/zphy_const.h include/znet_attr.h include/znet_beacon.h \
+  include/zfield.h
+./nwk/znet_discovery.o: nwk/znet_discovery.c include/ztypes.h \
+  ../../include/types.h include/zcall.h include/zigconf.h \
+  include/zneighbor.h include/zmac_scan.h include/znet_discovery.h
+./nwk/znet_orphan_child.o: nwk/znet_orphan_child.c include/ztypes.h \
+  ../../include/types.h ../../include/debug.h include/zcall.h \
+  include/zigconf.h include/znet_attr.h include/zneighbor.h \
+  include/znet_join.h include/zmac_scan.h include/zmac_assoc.h
+./nwk/znet_orphan_parent.o: nwk/znet_orphan_parent.c include/ztypes.h \
+  ../../include/types.h include/zcall.h include/zigconf.h \
+  include/zmac_orphan.h include/znet_relative.h include/zneighbor.h \
+  include/znet_join.h include/zmac_scan.h include/zmac_assoc.h
+./nwk/znet_beacon.o: nwk/znet_beacon.c include/ztypes.h \
+  ../../include/types.h include/zigconf.h include/zmac_beacon.h \
+  include/znet_beacon.h include/zfield.h
+./nwk/znet_extra_attr.o: nwk/znet_extra_attr.c include/ztypes.h \
+  ../../include/types.h include/znet_attr.h include/zigconf.h \
+  include/zneighbor.h include/znet_reset.h

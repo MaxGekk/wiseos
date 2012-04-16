@@ -1,0 +1,95 @@
+\documentclass[14pt]{extarticle}
+
+\usepackage{makeidx}
+\usepackage{russcorr}
+\usepackage[warn]{mathtext}
+\usepackage[T2A]{fontenc}
+\usepackage[utf8,utf8x]{inputenc}
+\usepackage[russian,english]{babel}
+\usepackage{ucs}
+\usepackage[dvipdf]{graphicx}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage[mathscr]{eucal}
+\usepackage{eufrak}
+\usepackage{latexsym}
+\usepackage{indentfirst}
+\usepackage{wrapfig}
+\usepackage{pstricks,pst-node,pst-tree}
+\usepackage{listings}
+\usepackage{ulem}
+\usepackage{supertabular}
+\usepackage{verbatim}
+\usepackage{color}
+\usepackage{tabularx}
+%\usepackage{a4wide}
+\usepackage[a4paper, mag=1000, left=2.5cm, right=2.5cm, top=1.5cm, bottom=3cm]{geometry}
+
+\definecolor{darkblue}{rgb}{0,0,0.3}
+\usepackage[unicode=true, colorlinks=true, linkcolor=black, urlcolor=darkblue]{hyperref}
+
+\hypersetup{pdfstartview=FitV}
+\hypersetup{pdftitle=ZigSwarm}
+\hypersetup{pdfauthor=Max Gekk}
+\hypersetup{bookmarks=true, bookmarksopen=true}
+
+\righthyphenmin=2
+\tolerance=500
+
+\newcommand\Bpara[4]{%
+  \begin{picture}(0,0)%
+    %\setlength{\unitlength}{1mm}%
+    \put(#1,#2){\rotatebox{#3}{\raisebox{0mm}[0mm][0mm]{%
+                \makebox[0mm]{$\left . \rule{0mm}{#4pt}\right\}$}}}}%
+  \end{picture}}
+\frenchspacing
+
+%\headheight=0pt
+%\headsep=0pt
+%\topmargin=0pt
+%\voffset=-1cm
+
+\includeonly{title,approtocol,biblio}
+\renewcommand{\baselinestretch}{1.5}
+
+\setcounter{secnumdepth}{5}
+\setcounter{tocdepth}{3}
+
+\begin{document}
+  \include{title}
+
+  \inputencoding{utf8}                
+  \Russian
+  \renewcommand{\refname}{Библиография}
+  \renewcommand{\bibname}{Библиография}
+  \renewcommand{\figurename}{Рис.}
+  \renewcommand{\tablename}{Таблица}
+  \renewcommand{\contentsname}{Оглавление}
+  \renewcommand{\listfigurename}{Перечень схем}
+  \renewcommand{\listtablename}{Перечень таблиц}
+  \renewcommand{\abstractname}{Аннотация}
+  \renewcommand{\appendixname}{Приложение}
+  \renewcommand{\proofname}{Доказательство}
+  \renewcommand{\indexname}{Предметный указатель}
+
+  \renewcommand{\today}{\number\day\space
+                \ifcase\month\or
+                 января\or февраля\or марта\or апреля\or мая\or
+                 июня\or июля\or августа\or сентября\or октября\or
+                 ноября\or декабря\fi\space\number\year\spaceг.}
+
+  \renewcommand{\postsection}{\quad}
+  \renewcommand{\postsubsection}{\quad}
+  \renewcommand{\postsubsubsection}{\quad}
+  \renewcommand{\postparagraph}{\quad}
+  \renewcommand{\postsubparagraph}{\quad}
+  
+\tableofcontents
+\newpage
+\listoffigures
+\newpage
+
+\include{approtocol}
+\include{biblio}
+
+\end{document}
+
